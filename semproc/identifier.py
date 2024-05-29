@@ -84,7 +84,7 @@ class Identify():
             # so this should be the rolled up value
             return clauses
 
-        for k, v in clauses.iteritems():
+        for k, v in clauses.items():
             if isinstance(v, dict):
                 return sums + self._evaluate(v, 0)
             elif isinstance(v, list) and not all(isinstance(i, bool) for i in v):
@@ -107,7 +107,7 @@ class Identify():
         '''
         def _test_option(filters):
             '''where filters is the set of filters as booleans'''
-            for i, j in filters.iteritems():
+            for i, j in filters.items():
                 if self._evaluate({i: self._filter(i, j, [])}, 0):
                     return True
 
@@ -133,7 +133,7 @@ class Identify():
                             item = [c.get('text', '')]  # just for the xpath handling later
                     elif c['type'] == 'xpath':
                         if self.parser.xml is None:
-                            print 'Parser FAIL'
+                            print ('Parser FAIL')
                             continue
 
                         try:
@@ -141,7 +141,7 @@ class Identify():
                             values = values if isinstance(values, list) else [values]
                             item = [' '.join(v.strip().split()) for v in values if v is not None]
                         except Exception as ex:
-                            print 'XPATH FAIL: ', ex
+                            print(('XPATH FAIL: ', ex))
                             continue
 
                     if item:
@@ -152,10 +152,10 @@ class Identify():
         def _chain(source_dict, keys):
             try:
                 return list(chain.from_iterable(
-                    [source_dict.get(key, {}).items() for key in keys]
+                    [list(source_dict.get(key, {}).items()) for key in keys]
                 ))
             except:
-                print source_dict
+                print (source_dict)
                 return []
 
         matches = []
@@ -163,7 +163,7 @@ class Identify():
             protocol_name = protocol['name']
             # print protocol_name
 
-            for k, v in protocol.iteritems():
+            for k, v in protocol.items():
                 if k in ['name'] or v is None:
                     continue
 

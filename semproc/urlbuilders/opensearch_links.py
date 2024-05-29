@@ -1,5 +1,5 @@
 from lxml import etree
-import urlparse
+import urllib.parse
 import urllib
 from itertools import chain
 

@@ -9,7 +9,7 @@ def import_yaml_configs(config_paths):
 
     def _read(config_path):
         with open(config_path, 'r') as f:
-            y = yaml.load(f.read())
+            y = yaml.safe_load(f.read())
 
         return y
 

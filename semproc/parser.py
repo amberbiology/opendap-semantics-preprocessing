@@ -10,7 +10,7 @@ class Parser():
     def __init__(self, text):
         try:
             self.text = text.encode('unicode_escape')
-        except UnicodeDecodeError:
+        except (UnicodeDecodeError, AttributeError):
             # TODO: this should be somewhere else and also maybe not this
             self.text = text.decode('utf-8', 'replace').encode('unicode_escape')
         self.parser = etree.XMLParser(
@@ -27,7 +27,7 @@ class Parser():
         try:
             self.xml = etree.fromstring(self.text, parser=self.parser)
         except Exception as ex:
-            print ex
+            print (ex)
             raise ex
 
     def _extract_namespaces(self):

@@ -1,6 +1,6 @@
 from lxml import etree
 import urllib
-import urlparse
+import urllib.parse
 from semproc.utils import extract_element_tag
 
 

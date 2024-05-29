@@ -1,10 +1,10 @@
-import urlparse
+import urllib.parse
 import urllib
 import collections
 from uuid import uuid4
 import hashlib
 from itertools import chain
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 import re
 
 
@@ -19,7 +19,7 @@ def unquote(url):
 
 
 def break_url(url):
-    parts = urlparse.urlparse(url)
+    parts = urllib.parse.urlparse(url)
 
     url = urlparse.urlunparse((
         parts.scheme,
@@ -40,7 +40,7 @@ def parse_url(url):
     '''
     if not url:
         return ''
-    parsed_url = urlparse.urlparse(url)
+    parsed_url = urllib.parse.urlparse(url)
     return urlparse.parse_qs(parsed_url.query)
 
 
@@ -67,7 +67,7 @@ def generate_uuid_urn():
 
 
 def generate_sha(text):
-    return hashlib.sha224(text).hexdigest()
+    return hashlib.sha224(text.encode(encoding='UTF-8')).hexdigest()
 
 
 def generate_sha_urn(text):

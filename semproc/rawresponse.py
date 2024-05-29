@@ -156,7 +156,7 @@ class RawResponse():
 
         this also is behaving badly
         '''
-        pttn = ur'[\\{3,}]'
+        pttn = r'[\\{3,}]'
         self.content = re.sub(pttn, ' ', self.content)
 
     def clean_raw_content(self):
@@ -166,7 +166,7 @@ class RawResponse():
             newline, remove unicode cruft)
         '''
         self._extract_from_cdata()
-        self.content = self.content.decode('string_escape')
+        self.content = self.content.decode('unicode_escape')
         self._strip_unicode_replace()
         self._strip_whitespace()
 
