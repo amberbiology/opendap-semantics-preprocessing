@@ -1,5 +1,5 @@
 import urllib.parse
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import collections
 from uuid import uuid4
 import hashlib
@@ -15,21 +15,21 @@ url handling:
 
 
 def unquote(url):
-    return urllib.unquote(url)
+    return urllib.parse.unquote(url)
 
 
 def break_url(url):
     parts = urllib.parse.urlparse(url)
 
-    url = urlparse.urlunparse((
+    url = urllib.parse.urlunparse((
         parts.scheme,
         parts.netloc,
         parts.path,
         None, None, None
     ))
 
-    params = urlparse.parse_qs(parts.query)
-    values = list(chain.from_iterable((params.values())))
+    params = urllib.parse.parse_qs(parts.query)
+    values = list(chain.from_iterable((list(params.values()))))
 
     return url, ' '.join(values)
 
@@ -41,7 +41,7 @@ def parse_url(url):
     if not url:
         return ''
     parsed_url = urllib.parse.urlparse(url)
-    return urlparse.parse_qs(parsed_url.query)
+    return urllib.parse.parse_qs(parsed_url.query)
 
 
 '''
@@ -103,7 +103,7 @@ def remap_http_method(original_method):
         "HTTP GET": ['get'],
         "HTTP POST": ['post']
     }
-    for k, v in definition.iteritems():
+    for k, v in list(definition.items()):
         if original_method.lower() in v:
             return k
     return original_method
@@ -124,7 +124,7 @@ def tidy_dict(items):
     # cleanup a dict (remove empty elements)
     # but only at the single depth
     to_remove = []
-    for k, v in items.iteritems():
+    for k, v in list(items.items()):
         if not v:
             to_remove.append(k)
     for k in to_remove:
@@ -143,7 +143,7 @@ def flatten(items, excluded_keys=[]):
 
     def _flatten(item):
         if isinstance(item, dict):
-            for k, v in item.iteritems():
+            for k, v in list(item.items()):
                 if k in excluded_keys:
                     continue
                 # TODO: this introduces nested lists again!
@@ -151,7 +151,7 @@ def flatten(items, excluded_keys=[]):
         elif isinstance(item, list):
             for i in item:
                 if isinstance(i, collections.Iterable) \
-                        and not isinstance(i, basestring):
+                        and not isinstance(i, str):
                     for subitem in _flatten(i):
                         yield subitem
                 else:
@@ -161,7 +161,7 @@ def flatten(items, excluded_keys=[]):
 
     arr = list(_flatten(items))
     if len([isinstance(a, collections.Iterable) and
-            not isinstance(a, basestring) for a in arr]) > 0:
+            not isinstance(a, str) for a in arr]) > 0:
         # ick, flatten the dict issue again.
         return list(_flatten(arr))
 

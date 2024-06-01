@@ -13,7 +13,7 @@ from semproc.xml_utils import extract_attrib
 import dateutil.parser as dateparser
 from semproc.utils import generate_sha_urn, generate_uuid_urn
 import os
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 
 class OgcReader(Processor):
@@ -131,7 +131,7 @@ class OgcReader(Processor):
             if not found_params:
                 return defaults
 
-            for k, v in found_params.iteritems():
+            for k, v in found_params.items():
                 param = next(
                     iter(d for d in defaults if d['name'] == k.lower()), [])
                 if not param:
@@ -270,7 +270,7 @@ class OgcReader(Processor):
         elif service == 'SOS':
             return ''
 
-        return base_url + '?' + urllib.urlencode(params)
+        return base_url + '?' + urllib.parse.urlencode(params)
 
     def parse(self):
         # for ogc, a catalog record is the getcapabilities rsp
@@ -506,8 +506,8 @@ class OgcReader(Processor):
                 max_pos = coverage.max_pos
                 crs_urn = coverage.srs_urn
 
-                min_coord = map(float, min_pos.split())
-                max_coord = map(float, max_pos.split())
+                min_coord = list(map(float, min_pos.split()))
+                max_coord = list(map(float, max_pos.split()))
 
                 bbox = bbox_to_geom(min_coord + max_coord)
                 # TODO: there's an issue with the gdal_data path
@@ -570,7 +570,7 @@ class OgcReader(Processor):
         if reader.contents is None:
             return []
 
-        for name, dataset in reader.contents.iteritems():
+        for name, dataset in reader.contents.items():
             d = {}
 
             d['name'] = name

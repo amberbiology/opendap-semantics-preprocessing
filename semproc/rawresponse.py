@@ -110,7 +110,7 @@ class RawResponse():
             self.content = self.response.encode('unicode_escape')
             return
 
-        raw_content = self.response.encode('unicode_escape')
+        raw_content = self.response.encode('unicode_escape').decode('utf-8')
 
         m = re.search(pttn, raw_content)
 
@@ -166,7 +166,10 @@ class RawResponse():
             newline, remove unicode cruft)
         '''
         self._extract_from_cdata()
-        self.content = self.content.decode('unicode_escape')
+
+        if type(self.content) != str:
+            self.content = self.content.decode('unicode_escape')
+
         self._strip_unicode_replace()
         self._strip_whitespace()
 
