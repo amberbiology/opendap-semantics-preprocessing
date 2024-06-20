@@ -29,12 +29,13 @@ class RawResponse():
 
     def _determine_type(self):
         '''
-        so let's see if we think it's json or xml
+        so let's see if we think it's json, xml or text
         '''
 
         # yes, these are a little ridiculous, but explicit.
         json_substrings = ['application/json', 'text/json', '+json']
         xml_substrings = ['application/xml', 'text/xml', '+xml', '_xml']
+        text_substrings = ['application/text', 'text/plain']
 
         # absolutely reject these
         reject_substrings = [
@@ -56,6 +57,8 @@ class RawResponse():
             return 'json'
         elif any(substring in self.content_type for substring in xml_substrings):
             return 'xml'
+        elif any(substring in self.content_type for substring in text_substrings):
+            return 'text'
 
         # and now we aren't sure what we have
         # based on the content header

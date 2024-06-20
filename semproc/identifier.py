@@ -17,7 +17,7 @@ class Identify():
                  of a protocol, identify if it's a dataset service
                  for a protocol
     '''
-    def __init__(self, yaml_files, source_content, source_url, **options):
+    def __init__(self, yaml_files, source_content, source_url, source_response_datatype, **options):
         '''
         **options:
             parser: Parser from source_content
@@ -26,6 +26,7 @@ class Identify():
         self.yaml_files = yaml_files
         self.source_content = source_content
         self.source_url = source_url
+        self.source_response_datatype = source_response_datatype
         self.yaml = import_yaml_configs(self.yaml_files)
         self.parser = Parser(source_content)
 
@@ -133,7 +134,8 @@ class Identify():
                             item = [c.get('text', '')]  # just for the xpath handling later
                     elif c['type'] == 'xpath':
                         if self.parser.xml is None:
-                            print ('Parser FAIL')
+                            if self.source_response_datatype != 'text':
+                                print ('Parser FAIL')  # FIXME: only emit warning if it's neither text or XML
                             continue
 
                         try:
