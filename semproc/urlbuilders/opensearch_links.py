@@ -1,6 +1,6 @@
 from lxml import etree
-import urllib.parse
-import urllib
+from urllib.parse import urlparse, urlunparse, urlencode, parse_qs
+import urllib.request, urllib.error
 from itertools import chain
 
 
@@ -63,26 +63,26 @@ class OpenSearchLink():
         if search_terms:
             qps = dict(
                 chain(
-                    defaults.items(),
-                    {search_terms.keys()[0]: ''}.items()
+                    list(defaults.items()),
+                    list({list(search_terms.keys())[0]: ''}.items())
                 )
             )
 
-        self.url = url_base + '?' + urllib.urlencode(qps.items())
+        self.url = url_base + '?' + urlencode(list(qps.items()))
 
     def _extract_parameter_key(self, value, params):
         # sort out the query parameter name for a parameter
         # and don't send curly bracketed things, please
         return {k: v.split(':')[-1].replace('?', '') for k, v
-                in params.iteritems()
+                in list(params.items())
                 if value in v}
 
     def _extract_template(self, template_url, append_limit=True):
-        parts = urlparse.urlparse(template_url)
+        parts = urlparse(template_url)
         if not parts.scheme:
             return '', '', {}
 
-        base_url = urlparse.urlunparse((
+        base_url = urlunparse((
             parts.scheme,
             parts.netloc,
             parts.path,
@@ -91,15 +91,15 @@ class OpenSearchLink():
             None
         ))
 
-        qp = {k: v[0] for k, v in urlparse.parse_qs(parts.query).iteritems()}
+        qp = {k: v[0] for k, v in parse_qs(parts.query).items()}
 
         # get the hard-coded params
-        defaults = {k: v for k, v in qp.iteritems()
+        defaults = {k: v for k, v in qp.items()
                     if not v.startswith('{')
                     and not v.endswith('}')}
 
         # get the rest (and ignore the optional/namespaces)
-        parameters = {k: v[1:-1] for k, v in qp.iteritems()
+        parameters = {k: v[1:-1] for k, v in qp.items()
                       if v.startswith('{')
                       and v.endswith('}')}
 
@@ -107,7 +107,7 @@ class OpenSearchLink():
             terms = self._extract_parameter_key('count', parameters)
             if terms:
                 defaults = dict(
-                    chain(defaults.items(), {k: 5 for k in terms.keys()}.items())
+                    chain(list(defaults.items()), list({k: 5 for k in list(terms.keys())}.items()))
                 )
 
         # note: not everyone manages url-encoded query parameter delimiters

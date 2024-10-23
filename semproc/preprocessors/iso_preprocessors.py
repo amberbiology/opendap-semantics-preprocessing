@@ -279,12 +279,16 @@ class IsoParser(object):
 
             if begin_position is not None and 'indeterminatePosition' not in begin_position.attrib:
                 begin_position = self._parse_timestamp(begin_position.text)
+            else:
+                begin_position = None
             if end_position is not None and 'indeterminatePosition' not in end_position.attrib:
                 end_position = self._parse_timestamp(end_position.text)
+            else:
+                end_position = None
 
             extents.update({
-                "esip:startDate": begin_position.isoformat(),
-                "esip:endDate": end_position.isoformat()
+                "esip:startDate": begin_position.isoformat() if begin_position is not None else "",
+                "esip:endDate": end_position.isoformat() if end_position is not None else ""
             })
 
         return extents
@@ -305,14 +309,18 @@ class IsoParser(object):
         bbox = [west, south, east, north] \
             if east and west and north and south else []
 
-        geom = bbox_to_geom(bbox)
-        return {
-            "dc:spatial": to_wkt(geom),
-            "esip:westBound": west,
-            "esip:eastBound": east,
-            "esip:southBound": south,
-            "esip:northBound": north
-        }
+        # no bounding box, return nothing
+        if len(bbox) == 0:
+            return {}
+        else:
+            geom = bbox_to_geom(bbox)
+            return {
+                "dc:spatial": to_wkt(geom),
+                "esip:westBound": west,
+                "esip:eastBound": east,
+                "esip:southBound": south,
+                "esip:northBound": north
+            }
 
     def _handle_polygon(self, polygon_elem):
         elem = extract_elem(polygon_elem, ['polygon', 'Polygon'])
@@ -460,6 +468,8 @@ class MxParser(IsoParser):
                 self.elem,
                 ['//*', 'identificationInfo', 'MD_DataIdentification']):
             dataset, keywords = self._parse_identification_info(id_elem)
+            if 'relationships' not in dataset: # ensure that key exists
+                dataset['relationships'] = []
             dataset['relationships'].append({
                 "relate": "bcube:hasMetadataRecord",
                 "object_id": self.output['catalog_record']['object_id']

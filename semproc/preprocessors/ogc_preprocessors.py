@@ -281,7 +281,7 @@ class OgcReader(Processor):
 
         urls = set()
 
-        if not self.reader:
+        if not hasattr(self, 'reader') or not self.reader:
             self.description = {}
             return
 

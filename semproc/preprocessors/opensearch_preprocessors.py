@@ -157,7 +157,7 @@ class OpenSearchReader(Processor):
 
         # deal with the namespaced parameters as [query param key, prefix, type]
         query_params = [[k] + list(_extract_prefix(v)) for k, v
-                        in query_params.iteritems()]
+                        in query_params.items()]
 
         return [
             tidy_dict({
