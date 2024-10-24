@@ -79,14 +79,16 @@ class OpenSearchReader(Processor):
 
         for t in extract_elems(self.parser.xml, ['Url']):
             ep = self._parse_endpoint(t)
-            url_sha = generate_sha_urn(ep['url'])
+            # guard against potentially empty field
+            url = ep.get('url') if ep.get('url') else ''  
+            url_sha = generate_sha_urn(url)
             if url_sha not in urls:
                 urls.add(url_sha)
                 url_id = generate_uuid_urn()
                 dist = self._generate_harvest_manifest(**{
                     "bcube:hasUrlSource": "Generated",
                     "bcube:hasConfidence": "Not Sure",
-                    "vcard:hasURL": ep['url'],
+                    "vcard:hasURL": url,
                     "object_id": url_id,
                     "dc:identifier": url_sha
                 })

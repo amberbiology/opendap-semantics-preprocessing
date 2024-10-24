@@ -52,6 +52,7 @@ class OpenSearchLinkBuilder(object):
 
 class OpenSearchLink():
     def __init__(self, template_elem):
+        self.url = '' # initialize empty
         self.elem = template_elem
         self._generate()
 
@@ -67,6 +68,9 @@ class OpenSearchLink():
                     list({list(search_terms.keys())[0]: ''}.items())
                 )
             )
+        else:
+            # make sure qps has a value
+            qps = {} 
 
         self.url = url_base + '?' + urlencode(list(qps.items()))
 
